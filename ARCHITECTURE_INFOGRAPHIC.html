@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Personal Kanban — Architecture Infographic</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0F172A;
+    color: #F8FAFC;
+    padding: 28px 24px 36px;
+    min-width: 860px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .header-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #64748B;
+    margin-bottom: 8px;
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #F1F5F9;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .header h1 span { color: #3B82F6; }
+  .header-sub {
+    margin-top: 7px;
+    font-size: 12px;
+    color: #64748B;
+    letter-spacing: 0.01em;
+  }
+
+  /* ── GRID LAYOUT ── */
+  .grid-top { display: grid; grid-template-columns: 1fr 1.6fr; gap: 14px; margin-bottom: 14px; }
+  .grid-mid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .grid-bot { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .grid-full { margin-bottom: 14px; }
+
+  /* ── PANEL ── */
+  .panel {
+    background: #1E293B;
+    border-radius: 14px;
+    padding: 18px 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .panel-title {
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #475569;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .panel-title .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── TECH STACK ── */
+  .stack-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.04);
+    margin-bottom: 6px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .stack-item:last-child { margin-bottom: 0; }
+  .stack-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .stack-name { font-size: 12px; font-weight: 700; color: #E2E8F0; line-height: 1.2; }
+  .stack-desc { font-size: 10px; color: #64748B; margin-top: 1px; }
+  .stack-ver {
+    margin-left: auto;
+    font-size: 9px;
+    font-weight: 700;
+    color: #475569;
+    background: rgba(255,255,255,0.06);
+    padding: 2px 7px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  /* ── COMPONENT TREE ── */
+  .tree { font-size: 11px; line-height: 2; color: #94A3B8; font-family: 'SF Mono', 'Fira Code', monospace; }
+  .tree .node { display: flex; align-items: center; gap: 6px; }
+  .tree .node-name {
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 5px;
+    font-size: 10.5px;
+  }
+  .tree .node-desc { font-size: 9.5px; color: #475569; font-family: inherit; }
+  .tree .indent { padding-left: 14px; border-left: 1.5px solid rgba(255,255,255,0.07); margin-left: 7px; }
+  .n-blue   { background: rgba(59,130,246,0.18); color: #93C5FD; }
+  .n-green  { background: rgba(16,185,129,0.18); color: #6EE7B7; }
+  .n-purple { background: rgba(139,92,246,0.18); color: #C4B5FD; }
+  .n-amber  { background: rgba(245,158,11,0.18); color: #FCD34D; }
+  .n-slate  { background: rgba(100,116,139,0.18); color: #CBD5E1; }
+  .n-rose   { background: rgba(244,63,94,0.18);   color: #FDA4AF; }
+
+  /* ── DATA FLOW ── */
+  .flow-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: stretch;
+  }
+  .flow-down { font-size: 14px; color: #334155; text-align: center; line-height: 1; margin: 1px 0; }
+
+  /* ── COLUMNS ── */
+  .col-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+  .col-card {
+    border-radius: 10px;
+    padding: 11px 10px;
+    border-top: 3px solid;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .col-name { font-size: 10px; font-weight: 800; letter-spacing: 0.01em; line-height: 1.2; }
+  .col-id   { font-size: 8.5px; font-weight: 600; opacity: 0.55; letter-spacing: 0.04em; font-family: monospace; }
+  .col-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-top: 2px;
+    width: fit-content;
+  }
+
+  /* ── CARD ANATOMY ── */
+  .anatomy-card {
+    background: #0F172A;
+    border-radius: 10px;
+    padding: 12px 13px;
+    border-left: 4px solid #3B82F6;
+    position: relative;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .anatomy-row { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+  .anatomy-title { font-size: 12px; font-weight: 600; color: #E2E8F0; }
+  .anatomy-del { width: 14px; height: 14px; background: rgba(220,38,38,0.15); border-radius: 4px; display:flex;align-items:center;justify-content:center; font-size: 10px; color: #FDA4AF; }
+  .anatomy-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+  .a-badge { padding: 2px 7px; border-radius: 6px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .ann-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 7px;
+    font-size: 9.5px;
+    color: #475569;
+  }
+  .ann-dash { flex: 1; height: 1px; background: rgba(255,255,255,0.07); }
+  .ann-label { color: #3B82F6; font-weight: 700; font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+
+  /* ── STATE FLOW ── */
+  .state-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.03);
+    margin-bottom: 6px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .state-item:last-child { margin-bottom: 0; }
+  .state-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .state-name { font-size: 11px; font-weight: 700; color: #E2E8F0; }
+  .state-desc { font-size: 9.5px; color: #64748B; margin-top: 2px; line-height: 1.4; }
+
+  /* ── DESIGN DECISIONS ── */
+  .decision {
+    display: flex;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.03);
+    margin-bottom: 6px;
+    border-left: 3px solid;
+  }
+  .decision:last-child { margin-bottom: 0; }
+  .decision-q { font-size: 10.5px; font-weight: 700; color: #E2E8F0; }
+  .decision-a { font-size: 9.5px; color: #64748B; margin-top: 2px; line-height: 1.45; }
+
+  /* ── REALTIME CYCLE ── */
+  .rt-steps {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+  }
+  .rt-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+  }
+  .rt-icon {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+  .rt-label { font-size: 9px; font-weight: 700; color: #94A3B8; text-align: center; line-height: 1.3; }
+  .rt-arrow { font-size: 14px; color: #334155; flex-shrink: 0; align-self: center; margin-top: -10px; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    margin-top: 6px;
+    font-size: 9.5px;
+    color: #334155;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-tag">Architecture Reference</div>
+  <h1>Personal <span>Kanban</span> Board</h1>
+  <div class="header-sub">React 18 · Vite 5 · Supabase · @hello-pangea/dnd</div>
+</div>
+
+<!-- ROW 1: Tech Stack + Component Tree -->
+<div class="grid-top">
+
+  <!-- TECH STACK -->
+  <div class="panel">
+    <div class="panel-title"><div class="dot" style="background:#3B82F6"></div>Tech Stack</div>
+
+    <div class="stack-item">
+      <div class="stack-icon" style="background:rgba(20,184,166,0.2);color:#2DD4BF">⚛</div>
+      <div><div class="stack-name">React</div><div class="stack-desc">UI rendering · useState · useMemo</div></div>
+      <div class="stack-ver">18.3.1</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-icon" style="background:rgba(168,85,247,0.2);color:#C084FC">⚡</div>
+      <div><div class="stack-name">Vite</div><div class="stack-desc">Dev server · bundler · HMR</div></div>
+      <div class="stack-ver">5.4.1</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-icon" style="background:rgba(16,185,129,0.2);color:#34D399">🗄</div>
+      <div><div class="stack-name">Supabase</div><div class="stack-desc">Postgres DB · Realtime WebSocket</div></div>
+      <div class="stack-ver">2.39.3</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-icon" style="background:rgba(249,115,22,0.2);color:#FB923C">↕</div>
+      <div><div class="stack-name">@hello-pangea/dnd</div><div class="stack-desc">Drag-and-drop between columns</div></div>
+      <div class="stack-ver">16.6.0</div>
+    </div>
+  </div>
+
+  <!-- COMPONENT TREE -->
+  <div class="panel">
+    <div class="panel-title"><div class="dot" style="background:#8B5CF6"></div>Component Tree</div>
+    <div class="tree">
+      <div class="node"><span class="node-name n-blue">main.jsx</span><span class="node-desc">— React DOM mount · StrictMode</span></div>
+      <div class="indent">
+        <div class="node"><span class="node-name n-blue">App.jsx</span><span class="node-desc">— state orchestrator · search · filters</span></div>
+        <div class="indent">
+          <div class="node"><span class="node-name n-slate">StatsBar</span><span class="node-desc">— total / wip / overdue / done</span></div>
+          <div class="node"><span class="node-name n-slate">FilterBar</span><span class="node-desc">— priority pills · due-date pills</span></div>
+          <div class="node"><span class="node-name n-purple">Board</span><span class="node-desc">— DragDropContext · drag logic</span></div>
+          <div class="indent">
+            <div class="node"><span class="node-name n-amber">Column ×6</span><span class="node-desc">— Droppable zone · WIP guard</span></div>
+            <div class="indent">
+              <div class="node"><span class="node-name n-green">Card ×N</span><span class="node-desc">— Draggable · priority/due badges</span></div>
+              <div class="node"><span class="node-name n-rose">AddCardModal</span><span class="node-desc">— form · title · priority · date</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 2: 6 Columns -->
+<div class="panel grid-full">
+  <div class="panel-title"><div class="dot" style="background:#F59E0B"></div>The 6 Columns</div>
+  <div class="col-grid">
+    <div class="col-card" style="background:rgba(156,163,175,0.08);border-top-color:#9CA3AF">
+      <div class="col-name" style="color:#D1D5DB">Not Started</div>
+      <div class="col-id">not-started</div>
+      <div class="col-badge" style="background:rgba(156,163,175,0.15);color:#9CA3AF">📋 Backlog</div>
+    </div>
+    <div class="col-card" style="background:rgba(59,130,246,0.08);border-top-color:#3B82F6">
+      <div class="col-name" style="color:#93C5FD">WIP</div>
+      <div class="col-id">wip</div>
+      <div class="col-badge" style="background:rgba(239,68,68,0.15);color:#FCA5A5">⚠ Limit: 6</div>
+    </div>
+    <div class="col-card" style="background:rgba(139,92,246,0.08);border-top-color:#8B5CF6">
+      <div class="col-name" style="color:#C4B5FD">Recurring</div>
+      <div class="col-id">recurring</div>
+      <div class="col-badge" style="background:rgba(139,92,246,0.15);color:#C4B5FD">🔄 Repeating</div>
+    </div>
+    <div class="col-card" style="background:rgba(16,185,129,0.08);border-top-color:#10B981">
+      <div class="col-name" style="color:#6EE7B7">Completed</div>
+      <div class="col-id">completed</div>
+      <div class="col-badge" style="background:rgba(16,185,129,0.15);color:#6EE7B7">✓ Strikethrough</div>
+    </div>
+    <div class="col-card" style="background:rgba(244,63,94,0.08);border-top-color:#FB7185">
+      <div class="col-name" style="color:#FDA4AF">Deferred</div>
+      <div class="col-id">deferred</div>
+      <div class="col-badge" style="background:rgba(244,63,94,0.15);color:#FDA4AF">🚫 Blocked</div>
+    </div>
+    <div class="col-card" style="background:rgba(245,158,11,0.08);border-top-color:#F59E0B">
+      <div class="col-name" style="color:#FCD34D">Future Pick</div>
+      <div class="col-id">future</div>
+      <div class="col-badge" style="background:rgba(245,158,11,0.15);color:#FCD34D">💡 Someday</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 3: Card Anatomy + Data Flow + Realtime -->
+<div class="grid-mid">
+
+  <!-- LEFT: Card Anatomy + Schema -->
+  <div class="panel">
+    <div class="panel-title"><div class="dot" style="background:#10B981"></div>Card Anatomy</div>
+
+    <div class="anatomy-card">
+      <div class="anatomy-row">
+        <div class="anatomy-title">Redesign landing page</div>
+        <div class="anatomy-del">×</div>
+      </div>
+      <div class="anatomy-badges">
+        <div class="a-badge" style="background:#FEE2E2;color:#DC2626">HIGH</div>
+        <div class="a-badge" style="background:#FEF9C3;color:#CA8A04">⚠ Jun 10, 2026</div>
+      </div>
+      <div style="position:absolute;left:-1px;top:0;bottom:0;width:4px;background:#3B82F6;border-radius:10px 0 0 10px;"></div>
+    </div>
+
+    <div class="ann-line" style="margin-top:10px">
+      <div class="ann-dash"></div><div class="ann-label">← Left border</div><div class="ann-dash"></div>
+      <div style="font-size:9.5px;color:#64748B">= column accent color</div>
+    </div>
+    <div class="ann-line">
+      <div class="ann-dash"></div><div class="ann-label" style="color:#EF4444">Priority badge</div><div class="ann-dash"></div>
+      <div style="font-size:9.5px;color:#64748B">high / medium / low</div>
+    </div>
+    <div class="ann-line">
+      <div class="ann-dash"></div><div class="ann-label" style="color:#F59E0B">Due badge</div><div class="ann-dash"></div>
+      <div style="font-size:9.5px;color:#64748B">overdue / this-week / later</div>
+    </div>
+
+    <div style="margin-top:14px;">
+      <div class="panel-title" style="margin-bottom:9px;"><div class="dot" style="background:#3B82F6"></div>Supabase Row Schema</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+        <div style="background:rgba(255,255,255,0.04);border-radius:7px;padding:6px 9px;">
+          <div style="font-size:9px;color:#3B82F6;font-weight:700;text-transform:uppercase;font-family:monospace;">id</div>
+          <div style="font-size:9.5px;color:#64748B;margin-top:1px;">uuid · PK · auto</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:7px;padding:6px 9px;">
+          <div style="font-size:9px;color:#3B82F6;font-weight:700;text-transform:uppercase;font-family:monospace;">title</div>
+          <div style="font-size:9.5px;color:#64748B;margin-top:1px;">text · max 200</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:7px;padding:6px 9px;">
+          <div style="font-size:9px;color:#F59E0B;font-weight:700;text-transform:uppercase;font-family:monospace;">priority</div>
+          <div style="font-size:9.5px;color:#64748B;margin-top:1px;">high · medium · low</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:7px;padding:6px 9px;">
+          <div style="font-size:9px;color:#F59E0B;font-weight:700;text-transform:uppercase;font-family:monospace;">due_date</div>
+          <div style="font-size:9.5px;color:#64748B;margin-top:1px;">date · nullable</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:7px;padding:6px 9px;">
+          <div style="font-size:9px;color:#8B5CF6;font-weight:700;text-transform:uppercase;font-family:monospace;">col</div>
+          <div style="font-size:9.5px;color:#64748B;margin-top:1px;">column id string</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:7px;padding:6px 9px;">
+          <div style="font-size:9px;color:#8B5CF6;font-weight:700;text-transform:uppercase;font-family:monospace;">position</div>
+          <div style="font-size:9.5px;color:#64748B;margin-top:1px;">integer · sort order</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Data Flow + Realtime -->
+  <div style="display:flex;flex-direction:column;gap:14px;">
+
+    <div class="panel" style="flex:1">
+      <div class="panel-title"><div class="dot" style="background:#3B82F6"></div>Data Flow — User Action</div>
+      <div class="flow-vertical">
+        <div style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25);border-radius:9px;padding:8px 12px;text-align:center;">
+          <div style="font-size:10.5px;font-weight:700;color:#93C5FD;">User drags / adds / deletes</div>
+          <div style="font-size:9px;color:#475569;margin-top:1px;">Component event handler fires</div>
+        </div>
+        <div class="flow-down">↓</div>
+        <div style="background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:9px;padding:8px 12px;text-align:center;">
+          <div style="font-size:10.5px;font-weight:700;color:#C4B5FD;">useCards hook</div>
+          <div style="font-size:9px;color:#475569;margin-top:1px;">Optimistic setCards() immediately</div>
+        </div>
+        <div class="flow-down">↓</div>
+        <div style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25);border-radius:9px;padding:8px 12px;text-align:center;">
+          <div style="font-size:10.5px;font-weight:700;color:#6EE7B7;">Supabase async call</div>
+          <div style="font-size:9px;color:#475569;margin-top:1px;">INSERT · UPDATE · DELETE</div>
+        </div>
+        <div class="flow-down">↓</div>
+        <div style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);border-radius:9px;padding:8px 12px;text-align:center;">
+          <div style="font-size:10.5px;font-weight:700;color:#FCD34D;">React re-render</div>
+          <div style="font-size:9px;color:#475569;margin-top:1px;">useMemo recomputes cardsByCol</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><div class="dot" style="background:#EF4444"></div>Realtime Live Sync</div>
+      <div class="rt-steps">
+        <div class="rt-step">
+          <div class="rt-icon" style="background:rgba(16,185,129,0.15);">🗄</div>
+          <div class="rt-label">DB Change<br>(any tab)</div>
+        </div>
+        <div class="rt-arrow">›</div>
+        <div class="rt-step">
+          <div class="rt-icon" style="background:rgba(59,130,246,0.15);">⚡</div>
+          <div class="rt-label">WebSocket<br>event fires</div>
+        </div>
+        <div class="rt-arrow">›</div>
+        <div class="rt-step">
+          <div class="rt-icon" style="background:rgba(139,92,246,0.15);">🔄</div>
+          <div class="rt-label">Re-fetch<br>cards[]</div>
+        </div>
+        <div class="rt-arrow">›</div>
+        <div class="rt-step">
+          <div class="rt-icon" style="background:rgba(245,158,11,0.15);">🖥</div>
+          <div class="rt-label">All tabs<br>update</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ROW 4: State Ownership + Key Decisions + File Map -->
+<div class="grid-bot">
+
+  <div class="panel">
+    <div class="panel-title"><div class="dot" style="background:#F59E0B"></div>State Ownership</div>
+    <div class="state-item">
+      <div class="state-icon">🪝</div>
+      <div><div class="state-name">useCards</div><div class="state-desc">cards[] · loading · CRUD ops<br>Single source of truth</div></div>
+    </div>
+    <div class="state-item">
+      <div class="state-icon">🎯</div>
+      <div><div class="state-name">App.jsx</div><div class="state-desc">search · priorityFilter · dueFilter<br>filteredCards (memo)</div></div>
+    </div>
+    <div class="state-item">
+      <div class="state-icon">🖱</div>
+      <div><div class="state-name">Board.jsx</div><div class="state-desc">draggingFromCol — which column<br>the drag originated from</div></div>
+    </div>
+    <div class="state-item">
+      <div class="state-icon">📝</div>
+      <div><div class="state-name">Column.jsx</div><div class="state-desc">showModal — whether AddCard<br>modal is open</div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><div class="dot" style="background:#EF4444"></div>Key Design Decisions</div>
+    <div class="decision" style="border-left-color:#3B82F6">
+      <div><div class="decision-q">No Redux / Zustand</div><div class="decision-a">One data source, one owner. Props suffice. Global state would be over-engineering.</div></div>
+    </div>
+    <div class="decision" style="border-left-color:#10B981">
+      <div><div class="decision-q">Optimistic drag updates</div><div class="decision-a">State updates instantly before Supabase confirms — drag feels snappy, no snap-back.</div></div>
+    </div>
+    <div class="decision" style="border-left-color:#8B5CF6">
+      <div><div class="decision-q">Realtime re-fetches, not patches</div><div class="decision-a">Simpler and bulletproof. Avoids edge-case bugs from partial payload patching.</div></div>
+    </div>
+    <div class="decision" style="border-left-color:#F59E0B">
+      <div><div class="decision-q">WIP limit: 2 layers</div><div class="decision-a">isDropDisabled (library) + onDragEnd guard. Defense in depth.</div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><div class="dot" style="background:#10B981"></div>File Map</div>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <div style="display:flex;align-items:center;gap:7px;padding:5px 8px;background:rgba(255,255,255,0.03);border-radius:7px;">
+        <div style="font-size:9px;font-family:monospace;color:#94A3B8;width:80px;flex-shrink:0;">index.html</div>
+        <div style="font-size:9px;color:#475569;">HTML shell · #root · script entry</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;padding:5px 8px;background:rgba(255,255,255,0.03);border-radius:7px;">
+        <div style="font-size:9px;font-family:monospace;color:#94A3B8;width:80px;flex-shrink:0;">vite.config.js</div>
+        <div style="font-size:9px;color:#475569;">Vite + React plugin, 1 line</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;padding:5px 8px;background:rgba(255,255,255,0.03);border-radius:7px;">
+        <div style="font-size:9px;font-family:monospace;color:#94A3B8;width:80px;flex-shrink:0;">constants.js</div>
+        <div style="font-size:9px;color:#475569;">COLUMNS · COLORS · WIP_LIMIT</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;padding:5px 8px;background:rgba(255,255,255,0.03);border-radius:7px;">
+        <div style="font-size:9px;font-family:monospace;color:#94A3B8;width:80px;flex-shrink:0;">supabase.js</div>
+        <div style="font-size:9px;color:#475569;">Client singleton (1 connection)</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;padding:5px 8px;background:rgba(255,255,255,0.03);border-radius:7px;">
+        <div style="font-size:9px;font-family:monospace;color:#94A3B8;width:80px;flex-shrink:0;">useCards.js</div>
+        <div style="font-size:9px;color:#475569;">All CRUD + realtime hook</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;padding:5px 8px;background:rgba(255,255,255,0.03);border-radius:7px;">
+        <div style="font-size:9px;font-family:monospace;color:#94A3B8;width:80px;flex-shrink:0;">App.css</div>
+        <div style="font-size:9px;color:#475569;">Single flat CSS file, all styles</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;padding:5px 8px;background:rgba(255,255,255,0.03);border-radius:7px;">
+        <div style="font-size:9px;font-family:monospace;color:#94A3B8;width:80px;flex-shrink:0;">.env.example</div>
+        <div style="font-size:9px;color:#475569;">VITE_SUPABASE_URL + ANON_KEY</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">personal-kanban · tusharj.iitk@gmail.com · 2026</div>
+
+</body>
+</html>
