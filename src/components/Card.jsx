@@ -22,7 +22,7 @@ const DUE_STYLES = {
   later:      { bg: '#F1F5F9', text: '#64748B' },
 }
 
-export default function Card({ card, index, accentColor, deleteCard }) {
+export default function Card({ card, index, accentColor, deleteCard, onEdit }) {
   const isCompleted = card.col === 'completed'
   const dueStatus = getDueStatus(card.due_date)
   const priorityStyle = PRIORITY_COLORS[card.priority] || PRIORITY_COLORS.medium
@@ -37,6 +37,8 @@ export default function Card({ card, index, accentColor, deleteCard }) {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           style={{ borderLeftColor: accentColor, ...provided.draggableProps.style }}
+          onDoubleClick={e => { e.stopPropagation(); onEdit(card) }}
+          title="Double-click to edit"
         >
           <div className="card-top">
             <p className={`card-title ${isCompleted ? 'card-completed' : ''}`}>{card.title}</p>

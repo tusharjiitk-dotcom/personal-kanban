@@ -52,6 +52,11 @@ export function useCards() {
     await supabase.from('cards').delete().eq('id', id)
   }
 
+  async function updateCard(id, { title, priority, due_date }) {
+    setCards(prev => prev.map(c => c.id === id ? { ...c, title, priority, due_date: due_date || null } : c))
+    await supabase.from('cards').update({ title, priority, due_date: due_date || null }).eq('id', id)
+  }
+
   async function moveCard({ srcColId, dstColId, newSrcList, newDstList }) {
     // Optimistic update
     setCards(prev => {
@@ -74,5 +79,5 @@ export function useCards() {
     )
   }
 
-  return { cards, loading, addCard, deleteCard, moveCard }
+  return { cards, loading, addCard, deleteCard, moveCard, updateCard }
 }

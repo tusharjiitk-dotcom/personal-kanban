@@ -16,7 +16,7 @@ function getDueStatus(due_date) {
 }
 
 export default function App() {
-  const { cards, loading, addCard, deleteCard, moveCard } = useCards()
+  const { cards, loading, addCard, deleteCard, moveCard, updateCard } = useCards()
   const [search, setSearch] = useState('')
   const [priorityFilter, setPriorityFilter] = useState('')
   const [dueFilter, setDueFilter] = useState('')
@@ -82,6 +82,7 @@ export default function App() {
         addCard={addCard}
         deleteCard={deleteCard}
         moveCard={moveCard}
+        updateCard={updateCard}
       />
     </div>
   )

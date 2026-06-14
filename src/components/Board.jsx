@@ -3,7 +3,7 @@ import { DragDropContext } from '@hello-pangea/dnd'
 import { COLUMNS, WIP_LIMIT } from '../constants'
 import Column from './Column'
 
-export default function Board({ cards, cardsByCol, addCard, deleteCard, moveCard }) {
+export default function Board({ cards, cardsByCol, addCard, deleteCard, moveCard, updateCard }) {
   const [draggingFromCol, setDraggingFromCol] = useState(null)
   const wipCount = cards.filter(c => c.col === 'wip').length
 
@@ -55,6 +55,7 @@ export default function Board({ cards, cardsByCol, addCard, deleteCard, moveCard
             draggingFromCol={draggingFromCol}
             addCard={addCard}
             deleteCard={deleteCard}
+            updateCard={updateCard}
           />
         ))}
       </div>
