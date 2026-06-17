@@ -24,7 +24,8 @@ const DUE_STYLES = {
 
 export default function Card({ card, index, accentColor, deleteCard, onEdit }) {
   const isCompleted = card.col === 'completed'
-  const dueStatus = getDueStatus(card.due_date)
+  const rawDueStatus = getDueStatus(card.due_date)
+  const dueStatus = isCompleted && rawDueStatus === 'overdue' ? 'later' : rawDueStatus
   const priorityStyle = PRIORITY_COLORS[card.priority] || PRIORITY_COLORS.medium
   const dueStyle = dueStatus ? DUE_STYLES[dueStatus] : null
 
