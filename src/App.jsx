@@ -47,7 +47,7 @@ export default function App() {
     return {
       total:     cards.length,
       wip:       cards.filter(c => c.col === 'wip').length,
-      overdue:   cards.filter(c => c.due_date && new Date(c.due_date + 'T00:00:00') < today).length,
+      overdue:   cards.filter(c => c.due_date && new Date(c.due_date + 'T00:00:00') < today && c.col !== 'completed').length,
       completed: cards.filter(c => c.col === 'completed').length,
     }
   }, [cards])
